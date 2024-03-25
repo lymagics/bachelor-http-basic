@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  web:
+    extends:
+      file: docker-compose.yml
+      service: web
+    command: >
+      sh -c "python /waitlist/wait_for_postgres.py &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./src:/src
+    ports:
+      - '8000:8000'
+    
+  db:
+    extends:
+      file: docker-compose.yml
+      service: db
+    environment:
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - bachelor-http-basic-data:/var/lib/postgresql/data
+
+volumes:
+  bachelor-http-basic-data:
